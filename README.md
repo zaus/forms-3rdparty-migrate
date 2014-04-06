@@ -8,7 +8,7 @@ Your mileage may vary...
 0. Make sure to change the 'secret expected key' value
 1. Upload this to your plugins folder, or
 2. Upload somewhere, then include in `functions.php` with `include('path/to/Forms-3rdparty-Migrate-Hack.php')` -- or just paste it directly into `functions.php` in the WP editor
-3. Go to your site, but add `?forms-3rdparty-migrate=your-temporary-secret-plz-change-this`
+3. Go to your site, but add `?forms-3rdparty-migrate=your-temporary-secret-plz-change-this` to view the 'editor'
     * add `&raw=true` will print the whole array(s) out for extra debugging
 4. Scroll to the bottom of the page
 5. Copy the 'old' textarea into the 'new' textarea **if you haven't configured** Forms-3rdparty yet (this will overwrite everything)  If you have already configured some services, you'll need to copy those parts and insert them into the old value.  

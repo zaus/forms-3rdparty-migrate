@@ -26,10 +26,14 @@ class Forms3rdpartyMigrateHack {
 		$old_plugin = get_option('Cf73rdPartyIntegration_settings', 'not-used');
 		
 		// save
-		if(isset($_REQUEST['save']) && $_REQUEST['save'] == 'Update') {
+		if(isset($_REQUEST['save'])) {
 			$new = stripslashes_deep($_REQUEST['new']);
+			
+			// fix old key name
+			$new = str_replace('"cf7"', '"src"', $new);
+
 			$new_plugin = json_decode($new, true);
-			// update_option('Forms3rdPartyIntegration_settings', $new_plugin);
+			if($_REQUEST['save'] == 'Update') { echo 'saved'; }// update_option('Forms3rdPartyIntegration_settings', $new_plugin);
 		}
 		// review
 		else {
@@ -49,14 +53,17 @@ class Forms3rdpartyMigrateHack {
 		?>
 		<h3>Migrate Forms-3rdparty from Old Version</h3>
 		<form action="?" method="post">
-			<strong>CF7-3rdparty</strong>
-			<textarea style="width:100%; height:20em;" name="old"><?php echo json_encode($old_plugin/*, JSON_PRETTY_PRINT*/); ?></textarea>
+			<label for="old">CF7-3rdparty (old)</label>
+			<textarea id="old" style="width:100%; height:20em;" name="old"><?php echo json_encode($old_plugin/*, JSON_PRETTY_PRINT*/); ?></textarea>
 			<hr />
-			<strong>Forms-3rdparty</strong>
-			<textarea style="width:100%; height:20em;" name="new"><?php echo json_encode($new_plugin/*, JSON_PRETTY_PRINT*/); ?></textarea>
+			<label for="new">Forms-3rdparty (new)</label>
+			<textarea id="new" style="width:100%; height:20em;" name="new"><?php echo json_encode($new_plugin/*, JSON_PRETTY_PRINT*/); ?></textarea>
 			
+			<hr />
 			<input type="hidden" name="raw" value="<?php if(isset($_REQUEST['raw'])) echo esc_attr($_REQUEST['raw']); ?>" />
 			<input type="hidden" name="<?php echo esc_attr($this->migratekey) ?>" value="<?php echo esc_attr($_REQUEST[$this->migratekey]); ?>" />
+
+			<input type="submit" name="save" value="Test" />
 			<input type="submit" name="save" value="Update" />
 		</form>
 		<?php

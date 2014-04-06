@@ -1,4 +1,13 @@
 <?php
+/*
+Plugin Name: Forms: 3rd-Party Migrate Hack
+Plugin URI: https://gist.github.com/zaus/10001727
+Description: Upgrade CF7-3rdparty to Forms-3rdparty
+Author: zaus
+Version: 0.1
+Author URI: http://drzaus.com
+*/
+
 # upgrade path? http://wordpress.org/support/topic/how-to-upgrade-from-old-version-to-this-one?replies=1
 class Forms3rdpartyMigrateHack {
 	// poor security, please don't leave this on longer than you need to

@@ -98,6 +98,10 @@ class Forms3rdpartyMigrateHack {
 	const NS_CF7 = 'Cf73rdPartyIntegration';
 	const NS_Forms3rd = 'Forms3rdPartyIntegration';
 
+	const ACTION_GET = 'Get';
+	const ACTION_GET_RAW = 'Get Raw';
+	const ACTION_TEST = 'Test';
+	const ACTION_SET = 'Update';
 
 
 	function get_input() {
@@ -119,24 +123,30 @@ class Forms3rdpartyMigrateHack {
 		if($nopost || !isset($_REQUEST['action'])) $_REQUEST['action'] = false;
 		
 		switch($_REQUEST['action']) {
+			case self::ACTION_TEST:
+				// note that update mode "reverses" the from/to input
+				$setting = stripslashes_deep($_REQUEST['input']);
+				$setting = json_decode($setting, true);
+
+				$options['input'] = print_r($setting, true);
+				break;
 			// just show
-			case 'Review':
-			case 'Raw Review':
+			case self::ACTION_GET:
+			case self::ACTION_GET_RAW:
 			default:
-				$asarray = $_REQUEST['action'] == 'Raw Review';
+				$asarray = $_REQUEST['action'] == self::ACTION_GET_RAW;
 
 				$setting = get_option($options['mode'] . '_settings');
-				return array(
-					'mode' => $options['mode'],
-					'convert' => $options['convert'],
-					'input' => $asarray
+
+				$options['input'] = $asarray
 						? print_r($setting, true)
 						: (defined('JSON_PRETTY_PRINT')
 								? json_encode($setting, JSON_PRETTY_PRINT)
 								: json_encode($setting)
-							)
-				);
-			case 'Update':
+							);
+
+				break;
+			case self::ACTION_SET:
 				// note that update mode "reverses" the from/to input
 				$setting = stripslashes_deep($_REQUEST['input']);
 				// "convert" between plugin variations if necessary
@@ -159,13 +169,12 @@ class Forms3rdpartyMigrateHack {
 				// save the new setting
 				update_option($options['mode'] . '_settings', $newsetting);
 				
-				return array(
-					'updated' => true,
-					'mode' => $options['mode'],
-					'convert' => $options['convert'],
-					'input' => $setting
-					);
-		}
+				$options['updated'] = true;
+				$options['input'] = $setting;
+				break;
+		}//--	switch
+
+		return $options;
 	}
 
 	function radio_input($modes, $field, $input) {
@@ -221,9 +230,10 @@ class Forms3rdpartyMigrateHack {
 			<hr />
 
 			<?php
-			submit_button('Review', 'primary', 'action', false, array('id' => 'review', 'title' => 'Get the current settings; copy to export'));
-			submit_button('Raw Review', 'secondary', 'action', false, array('id' => 'raw', 'title' => 'Get the current settings in raw array format; cannot export'));
-			submit_button('Update', 'secondary update', 'action', false, array('id' => 'update'));
+			submit_button(self::ACTION_GET, 'primary', 'action', false, array('id' => 'review', 'title' => 'Get the current settings; copy to export'));
+			submit_button(self::ACTION_GET_RAW, 'secondary', 'action', false, array('id' => 'raw', 'title' => 'Get the current settings in raw array format; cannot export'));
+			submit_button(self::ACTION_TEST, 'secondary update', 'action', false, array('id' => 'test', 'title' => 'View the entered settings as raw array format; cannot import'));
+			submit_button(self::ACTION_SET, 'primary update', 'action', false, array('id' => 'update'));
 
 			wp_nonce_field(__CLASS__, __CLASS__);
 			?>

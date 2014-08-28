@@ -16,3 +16,5 @@ Your mileage may vary...
 9. If "upgrading" from CF7 to Forms, make sure to add any additional properties present in the 'new' format (such as labels) are added, otherwise you might get some PHP warnings when you go back to the Forms-3rdparty admin page.  This part might not be necessary if you don't have PHP warnings turned on.
 10. Check the integration plugin admin page to make sure your settings are all there.
 11. Try the new services.
+
+_NOTE_ Because all of the services are serialized to a single field, there is a limit to how many services you can configure at once.

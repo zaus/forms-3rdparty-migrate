@@ -13,6 +13,7 @@ Your mileage may vary...
 6. Choose 'Test' to see what your pasted JSON would like as a nicely formatted array (i.e. like 'Raw Review')
 7. Choose 'Update' to set the currently selected plugin from the values in the textarea.  Submitted values should be JSON.
 8. Select the 'Convert' option if you are migrating between CF7-3rdparty and Forms-3rdparty plugins -- this will perform minor variable renaming for you.
+9. Select the 'Merge' option to combine settings with existing.  Unselect to overwrite.
 9. If "upgrading" from CF7 to Forms, make sure to add any additional properties present in the 'new' format (such as labels) are added, otherwise you might get some PHP warnings when you go back to the Forms-3rdparty admin page.  This part might not be necessary if you don't have PHP warnings turned on.
 10. Check the integration plugin admin page to make sure your settings are all there.
 11. Try the new services.

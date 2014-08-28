@@ -4,7 +4,7 @@ Plugin Name: Forms: 3rd-Party Migrate Hack
 Plugin URI: https://gist.github.com/zaus/10001727
 Description: Export/Import settings for Forms-3rdparty, or migrate to/from CF7-3rdparty
 Author: zaus
-Version: 0.3
+Version: 0.3.1
 Author URI: http://drzaus.com
 */
 
@@ -90,7 +90,8 @@ class Forms3rdpartyMigrateHack {
 	function get_default_options() {
 		return array(
 				'mode' => self::NS_Forms3rd,
-				'convert' => self::NS_Forms3rd
+				'convert' => self::NS_Forms3rd,
+				'merge' => 0
 			);
 	}
 
@@ -125,10 +126,16 @@ class Forms3rdpartyMigrateHack {
 		switch($_REQUEST['action']) {
 			case self::ACTION_TEST:
 				// note that update mode "reverses" the from/to input
-				$setting = stripslashes_deep($_REQUEST['input']);
-				$setting = json_decode($setting, true);
+				$newsetting = stripslashes_deep($_REQUEST['input']);
+				$newsetting = json_decode($newsetting, true);
 
-				$options['input'] = print_r($setting, true);
+				// are we merging or replacing?
+				if(isset($options['merge']) && 1 == $options['merge']) {
+					$original = get_option($options['mode'] . '_settings');
+					$newsetting = array_replace_recursive($original, $newsetting);
+				}
+
+				$options['input'] = print_r($newsetting, true);
 				break;
 			// just show
 			case self::ACTION_GET:
@@ -166,6 +173,12 @@ class Forms3rdpartyMigrateHack {
 
 				$newsetting = json_decode($setting, true);
 
+				// are we merging or replacing?
+				if(isset($options['merge']) && 1 == $options['merge']) {
+					$original = get_option($options['mode'] . '_settings');
+					$newsetting = array_replace_recursive($original, $newsetting);
+				}
+
 				// save the new setting
 				update_option($options['mode'] . '_settings', $newsetting);
 				
@@ -177,20 +190,24 @@ class Forms3rdpartyMigrateHack {
 		return $options;
 	}
 
-	function radio_input($modes, $field, $input) {
+	function radio_input($key, $name, $field, $input, $type = 'radio') {
+		?>
+		<div class="field">
+			<label for="<?php echo esc_attr($field), '-', esc_attr($key) ?>"><?php _e($name) ?></label>
+			<input <?php checked($input[$field], $key) ?> type="<?php echo esc_attr($type) ?>" id="<?php echo esc_attr($field), '-', esc_attr($key) ?>" name="<?php echo esc_attr($field) ?>" value="<?php echo esc_attr($key) ?>" />
+		</div>
+		<?php
+	}
+
+	function radio_input_modes($modes, $field, $input, $type = 'radio') {
 		foreach($modes as $key => $name) {
-			?>
-			<div class="field">
-				<label for="<?php echo $field, '-', esc_attr($key) ?>"><?php _e($name) ?></label>
-				<input <?php checked($input[$field], $key) ?> type="radio" id="<?php echo $field, '-', esc_attr($key) ?>" name="<?php echo esc_attr($field) ?>" value="<?php echo esc_attr($key) ?>" />
-			</div>
-			<?php
+			$this->radio_input($key, $name, $field, $input, $type);
 		}
 	}
 
 	function show_form($input) {
 		?>
-		<h3>Migrate Forms-3rdparty</h3>
+		<h2>Migrate Forms-3rdparty</h2>
 		<form action="" method="post">
 			<?php if(isset($input['updated']) && true == $input['updated']) {
 				?>
@@ -200,43 +217,72 @@ class Forms3rdpartyMigrateHack {
 				<?php
 			}
 			?>
-			<div class="field-group">
-				<strong>Mode</strong>
+			<table class="form-table">
+			<tbody>
+				<tr>
+					<th scope="row"></th>
+					<td>
+						
+					</td>
+				</tr>
 
+				<tr>
+					<th scope="row">Mode</th>
+					<td>
+						<?php
+						$modes = array(self::NS_CF7 => 'Contact Form 7', self::NS_Forms3rd => 'Forms 3rdparty');
+						
+						$this->radio_input_modes($modes, 'mode', $input);
+						?>
+						<p class="description">Which plugin to export.  If migrating between plugin versions, make sure to review in one mode, then change modes before updating.</p>
+					</td>
+				</tr>
+
+				<tr>
+					<th scope="row">Convert?</th>
+					<td>
+						<?php
+						$this->radio_input_modes($modes, 'convert', $input);
+						?>
+						<p class="description">Which plugin we're importing from.  If migrating between plugin versions, this will cause the setting to be reformatted properly.</p>
+					</td>
+				</tr>
+
+				<tr>
+					<th scope="row">Merge?</th>
+					<td>
+						<?php
+						$this->radio_input(1, 'Yes', 'merge', $input, 'checkbox');
+						?>
+						<p class="description">Should we merge the settings or completely replace?</p>
+					</td>
+				</tr>
+
+				<tr>
+					<th scope="row"><label for="input">Settings</label></th>
+					<td>
+						<textarea id="input" name="input"><?php echo esc_textarea($input['input']) ?></textarea>
+						<p class="description">The current plugin settings, depending on <code>mode</code> chosen.  Serialized as JSON for portability.</p>
+					</td>
+				</tr>
+
+			</tbody>
+			</table>
+
+			<p class="submit">
 				<?php
-				$modes = array(self::NS_CF7 => 'Contact Form 7', self::NS_Forms3rd => 'Forms 3rdparty');
-				
-				$this->radio_input($modes, 'mode', $input);
+				submit_button(self::ACTION_GET, 'primary', 'action', false, array('id' => 'review', 'title' => 'Get the current settings; copy to export'));
+				echo '<span class="spacer"> </span>';
+				submit_button(self::ACTION_GET_RAW, 'secondary', 'action', false, array('id' => 'raw', 'title' => 'Get the current settings in raw array format; cannot export'));
+				echo '<span class="spacer"> </span>';
+				submit_button(self::ACTION_TEST, 'secondary update', 'action', false, array('id' => 'test', 'title' => 'View the entered settings as raw array format; cannot import'));
+				echo '<span class="spacer"> </span>';
+				submit_button(self::ACTION_SET, 'primary update', 'action', false, array('id' => 'update'));
+
+				wp_nonce_field(__CLASS__, __CLASS__);
 				?>
-				<em class="description">Which plugin to export.  If migrating between plugin versions, make sure to review in one mode, then change modes before updating.</em>
-			</div>
+			</p>
 
-			<div class="field-group">
-				<strong>Convert?</strong>
-
-				<?php
-				$this->radio_input($modes, 'convert', $input);
-				?>
-				<em class="description">Which plugin we're importing from.  If migrating between plugin versions, this will cause the setting to be reformatted properly.</em>
-			</div>
-
-
-			<div class="field">
-				<label for="input">Settings</label>
-				<textarea id="input" name="input"><?php echo esc_textarea($input['input']) ?></textarea>
-				<p><em class="description">The current plugin settings, depending on <code>mode</code> chosen.  Serialized as JSON for portability.</em></p>
-			</div>
-
-			<hr />
-
-			<?php
-			submit_button(self::ACTION_GET, 'primary', 'action', false, array('id' => 'review', 'title' => 'Get the current settings; copy to export'));
-			submit_button(self::ACTION_GET_RAW, 'secondary', 'action', false, array('id' => 'raw', 'title' => 'Get the current settings in raw array format; cannot export'));
-			submit_button(self::ACTION_TEST, 'secondary update', 'action', false, array('id' => 'test', 'title' => 'View the entered settings as raw array format; cannot import'));
-			submit_button(self::ACTION_SET, 'primary update', 'action', false, array('id' => 'update'));
-
-			wp_nonce_field(__CLASS__, __CLASS__);
-			?>
 		</form>
 		<?php
 	}

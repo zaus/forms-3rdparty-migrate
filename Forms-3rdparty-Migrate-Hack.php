@@ -4,9 +4,21 @@ Plugin Name: Forms: 3rd-Party Migrate Hack
 Plugin URI: https://gist.github.com/zaus/10001727
 Description: Export/Import settings for Forms-3rdparty, or migrate to/from CF7-3rdparty
 Author: zaus
-Version: 0.3.1
+Version: 0.3.2
 Author URI: http://drzaus.com
 */
+
+if(!function_exists('array_replace_recursive')) {
+	// ugh...testing on 5.2.17...
+	function array_replace_recursive($a, $b) {
+		foreach($b as $k => $v) {
+			if(is_array($v)) $a[$k] = array_replace_recursive((array)$a[$k], $v);
+			else $a[$k] = $v;
+		}
+		return $a;
+	}
+}
+
 
 # upgrade path? http://wordpress.org/support/topic/how-to-upgrade-from-old-version-to-this-one?replies=1
 class Forms3rdpartyMigrateHack {
@@ -190,6 +202,7 @@ class Forms3rdpartyMigrateHack {
 		return $options;
 	}
 
+
 	function radio_input($key, $name, $field, $input, $type = 'radio') {
 		?>
 		<div class="field">
@@ -234,7 +247,7 @@ class Forms3rdpartyMigrateHack {
 						
 						$this->radio_input_modes($modes, 'mode', $input);
 						?>
-						<p class="description">Which plugin to export.  If migrating between plugin versions, make sure to review in one mode, then change modes before updating.</p>
+						<p class="description">Which plugin to export/import.  If migrating between plugin versions, make sure to review in one mode, then change modes before updating.</p>
 					</td>
 				</tr>
 

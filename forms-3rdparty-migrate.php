@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: Forms: 3rd-Party Migrate Hack
-Plugin URI: https://gist.github.com/zaus/10001727
+Plugin Name: Forms: 3rd-Party Migrate
+Plugin URI: https://github.com/zaus/forms-3rdparty-migrate
 Description: Export/Import settings for Forms-3rdparty, or migrate to/from CF7-3rdparty
 Author: zaus
 Version: 0.3.2

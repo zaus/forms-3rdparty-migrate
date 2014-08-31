@@ -78,6 +78,25 @@ class Forms3rdpartyMigrateHack {
 	
 		return $links;
 	}
+	/**
+	 * Copied from Contact Form 7, for adding the plugin link
+	 * @param unknown_type $query
+	 */
+	function plugin_admin_url( $query = array() ) {
+		global $plugin_page;
+	
+		if ( ! isset( $query['page'] ) )
+			$query['page'] = $plugin_page;
+	
+		$path = 'admin.php';
+	
+		if ( $query = build_query( $query ) )
+			$path .= '?' . $query;
+	
+		$url = admin_url( $path );
+	
+		return esc_url_raw( $url );
+	}
 
 
 	function admin_init() {

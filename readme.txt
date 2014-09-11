@@ -39,7 +39,7 @@ _NOTE_ Because all of the services are serialized to a single field, there is a 
 1. Unzip, upload plugin folder to your plugins directory (`/wp-content/plugins/`)
 2. Make sure [Forms 3rdparty Integration](http://wordpress.org/plugins/forms-3rdparty-integration/) is installed and settings have been saved at least once.
 3. Activate plugin
-4. Go to new admin subpage _"3rdparty Services"_ under the tools menu
+4. Go to new admin subpage _"Forms-3rdparty Migrate"_ under the Tools menu
 
 == Frequently Asked Questions ==
 

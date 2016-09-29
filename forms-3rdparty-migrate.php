@@ -295,7 +295,7 @@ class Forms3rdpartyMigrateHack {
 				<tr>
 					<th scope="row"><label for="input">Settings</label></th>
 					<td>
-						<textarea id="input" name="input"><?php echo esc_textarea($input['input']) ?></textarea>
+						<textarea id="input" class="widefat" rows="20" name="input"><?php echo esc_textarea(  str_replace('\/', '/', $input['input'])  ) ?></textarea>
 						<p class="description">The current plugin settings, depending on <code>mode</code> chosen.  Serialized as JSON for portability.</p>
 					</td>
 				</tr>

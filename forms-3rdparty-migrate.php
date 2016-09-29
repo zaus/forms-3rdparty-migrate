@@ -317,7 +317,21 @@ class Forms3rdpartyMigrateHack {
 				?>
 			</p>
 
+			<div class="info">
+				<h3>Typical Usage Scenario</h3>
+				<ol>
+					<li>Open the "Forms: 3rdparty Integration" settings page in two browser tabs (this is a 'just in case something goes wrong with the merge')</li>
+					<li>Install the <a href="https://wordpress.org/plugins/forms-3rdparty-migrate/">&quot;Forms: 3rdparty Migrate&quot; plugin</a></li>
+					<li>Activate the plugin, go to its settings page (linked from plugin list, or under 'Tools')</li>
+					<li>Copy the text from the "Settings" field, save to a file as a backup.</li>
+					<li>Paste the attached json into the "Settings" field, and make sure the "Merge" option is checked</li>
+					<li>You can test the merge to make sure it worked, but you should just be able to hit "Update"</li>
+					<li>Refresh one of the F3P admin pages -- if something went wrong, try pasting the original Settings value back and unchecking "Merge" to replace the settings.  If that doesn't work, switch to the other F3P admin tab and just click the 'Save' button -- this should restore your original settings.</li>
+				</ol>
+			</div>
+
 		</form>
+
 		<?php
 	}
 

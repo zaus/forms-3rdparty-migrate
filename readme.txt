@@ -66,6 +66,10 @@ N/A.
 
 == Changelog ==
 
+= 0.3.3 =
+
+Fixed unchecked option save bug
+
 = 0.3.0 =
 
 Moved out of gist and formalized as real plugin.

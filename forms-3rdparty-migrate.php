@@ -4,7 +4,7 @@ Plugin Name: Forms: 3rd-Party Migrate
 Plugin URI: https://github.com/zaus/forms-3rdparty-migrate
 Description: Export/Import settings for Forms-3rdparty, or migrate to/from CF7-3rdparty
 Author: zaus
-Version: 0.3.2
+Version: 0.3.3
 Author URI: http://drzaus.com
 */
 
@@ -147,6 +147,8 @@ class Forms3rdpartyMigrateHack {
 		if(!$nopost) {
 			foreach($this->get_default_options() as $opt => $def) {
 				if(isset($_REQUEST[$opt])) $options[$opt] = $_REQUEST[$opt];
+				// gotta empty the checkbox
+				else $options[$opt] = '';
 			}
 			update_option($this->N('settings'), $options);
 		}
